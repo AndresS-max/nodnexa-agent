@@ -13,8 +13,8 @@ import streamlit as st
 
 from src.config import DOCS_DIR
 from src.ingestion.chunker import chunk_documents
-from src.ingestion.indexer import build_index
-from src.ingestion.loaders import LOADERS, load_documents
+from src.ingestion.indexer import add_file_to_index
+from src.ingestion.loaders import LOADERS
 from src.rag.agent import NodnexaAgent
 from src.rag.logger import Cronometro, registrar_consulta, registrar_feedback
 
@@ -46,6 +46,11 @@ st.markdown(f"""
     }}
     [data-testid="stSidebar"] {{ background: {INK}; }}
     [data-testid="stSidebar"] * {{ color: #E2E8F0; }}
+    [data-testid="stSidebar"] code {{
+        background: rgba(255, 255, 255, 0.10) !important;
+        color: #5EEAD4 !important;
+        padding: 1px 6px; border-radius: 6px; font-size: 0.78rem;
+    }}
     .stButton > button {{ border-radius: 10px; }}
 </style>
 """, unsafe_allow_html=True)
@@ -75,12 +80,15 @@ with st.sidebar:
         "Agrega un documento nuevo", type=list(formatos),
         help="El documento se suma a la base y el índice se reconstruye.",
     )
-    if subida is not None:
+    if subida is not None and st.session_state.get("ultimo_indexado") != subida.name:
         destino = DOCS_DIR / subida.name
         destino.write_bytes(subida.getvalue())
-        with st.spinner("Reindexando la base de conocimiento..."):
-            build_index(chunk_documents(load_documents(DOCS_DIR)))
-        st.success(f"'{subida.name}' agregado e indexado ✅")
+        loader = LOADERS[destino.suffix.lower()]
+        with st.spinner(f"Indexando '{subida.name}'…"):
+            chunks = chunk_documents(loader(destino))
+            add_file_to_index(chunks, subida.name)
+        st.session_state.ultimo_indexado = subida.name
+        st.success(f"'{subida.name}' agregado a la base ({len(chunks)} fragmentos) ✅")
 
     st.divider()
     if st.button("🗑️ Limpiar conversación", width="stretch"):
