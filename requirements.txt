@@ -19,3 +19,6 @@ streamlit>=1.40
 
 # Utilidades
 python-dotenv>=1.0
+
+# Desarrollo y pruebas
+pytest>=8.0
