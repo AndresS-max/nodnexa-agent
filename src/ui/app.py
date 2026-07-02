@@ -51,6 +51,22 @@ st.markdown(f"""
         color: #5EEAD4 !important;
         padding: 1px 6px; border-radius: 6px; font-size: 0.78rem;
     }}
+    /* Oculta el menú de desarrollador de Streamlit (tema, imprimir, etc.) */
+    [data-testid="stToolbar"], #MainMenu, footer {{ display: none !important; }}
+    /* Zona de carga de archivos legible sobre la barra lateral oscura */
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {{
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1.5px dashed rgba(94, 234, 212, 0.45) !important;
+        border-radius: 12px;
+    }}
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small {{
+        color: #CBD5E1 !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button {{
+        background: {ACCENT} !important; color: white !important;
+        border: none !important; border-radius: 8px !important;
+    }}
     .stButton > button {{ border-radius: 10px; }}
 </style>
 """, unsafe_allow_html=True)
