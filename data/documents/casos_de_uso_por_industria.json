@@ -1,0 +1,73 @@
+{
+  "empresa": "Nodnexa",
+  "descripcion": "Casos de uso de automatización con IA por industria, con procesos típicos, solución recomendada y resultados esperados",
+  "ultima_actualizacion": "2026-07",
+  "casos_de_uso": [
+    {
+      "industria": "E-commerce y tiendas online",
+      "problemas_tipicos": [
+        "Preguntas repetitivas sobre envíos, devoluciones y stock",
+        "Carritos abandonados sin seguimiento",
+        "Actualización manual de inventario entre plataformas"
+      ],
+      "solucion_nodnexa": "Chatbot de atención al cliente (web o WhatsApp) entrenado con las políticas de la tienda + automatización de recuperación de carritos + sincronización de inventario entre tienda y hoja de control",
+      "servicios_relacionados": ["Chatbot de atención al cliente", "Automatización media"],
+      "resultado_esperado": "Reducción de hasta 70% en tickets repetitivos y recuperación de 5-12% de carritos abandonados"
+    },
+    {
+      "industria": "Clínicas y consultorios",
+      "problemas_tipicos": [
+        "Agendamiento telefónico que consume tiempo del personal",
+        "Inasistencias por falta de recordatorios",
+        "Preguntas repetidas sobre preparación de exámenes y coberturas"
+      ],
+      "solucion_nodnexa": "Agente de WhatsApp para agendar, confirmar y recordar citas + FAQ automatizado con las políticas de la clínica",
+      "servicios_relacionados": ["Chatbot de atención al cliente (WhatsApp)", "Automatización simple"],
+      "resultado_esperado": "Reducción de 30-50% en inasistencias y descarga del 60% de llamadas administrativas"
+    },
+    {
+      "industria": "Inmobiliarias",
+      "problemas_tipicos": [
+        "Leads de portales que se enfrían por respuesta tardía",
+        "Calificación manual de interesados",
+        "Seguimiento disperso en hojas y chats personales"
+      ],
+      "solucion_nodnexa": "Sistema de captación y calificación de leads: respuesta automática inmediata, scoring por presupuesto y zona, asignación al asesor correcto y registro en CRM",
+      "servicios_relacionados": ["Sistema de captación y calificación de leads"],
+      "resultado_esperado": "Primera respuesta en menos de 1 minuto y aumento de 20-35% en tasa de contacto efectivo"
+    },
+    {
+      "industria": "Servicios profesionales (contadores, abogados, consultores)",
+      "problemas_tipicos": [
+        "Búsqueda manual de información en documentos y normativas internas",
+        "Recordatorios de vencimientos llevados a mano",
+        "Generación repetitiva de reportes mensuales para clientes"
+      ],
+      "solucion_nodnexa": "Agente RAG de conocimiento corporativo sobre los documentos del despacho + automatización de reportes y recordatorios de vencimientos",
+      "servicios_relacionados": ["Agente RAG de conocimiento corporativo", "Automatización media"],
+      "resultado_esperado": "Consultas internas resueltas en segundos con fuente citada y reportes generados automáticamente cada período"
+    },
+    {
+      "industria": "Educación y academias online",
+      "problemas_tipicos": [
+        "Dudas repetitivas de estudiantes sobre cursos, pagos y certificados",
+        "Onboarding manual de nuevos alumnos",
+        "Seguimiento de alumnos inactivos"
+      ],
+      "solucion_nodnexa": "Chatbot entrenado con el reglamento y FAQ de la academia + secuencias automáticas de bienvenida y reactivación",
+      "servicios_relacionados": ["Chatbot de atención al cliente", "Automatización media"],
+      "resultado_esperado": "Atención 24/7 a estudiantes y reducción del 50% en carga operativa del equipo académico"
+    },
+    {
+      "industria": "Pymes en general (operaciones y finanzas)",
+      "problemas_tipicos": [
+        "Facturación y cobranza manuales",
+        "Datos duplicados entre CRM, hojas de cálculo y correo",
+        "Reportes gerenciales armados a mano cada mes"
+      ],
+      "solucion_nodnexa": "Automatización end-to-end del ciclo facturación-cobranza-conciliación + sincronización de datos entre sistemas + reporte gerencial automático",
+      "servicios_relacionados": ["Automatización avanzada", "Mantenimiento Pro"],
+      "resultado_esperado": "Ahorro de 15-30 horas al mes del equipo administrativo y reducción de errores de digitación"
+    }
+  ]
+}
