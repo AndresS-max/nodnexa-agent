@@ -1,6 +1,4 @@
 """Indexación vectorial: embeddings (Voyage AI) + ChromaDB persistente."""
-import shutil
-
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_voyageai import VoyageAIEmbeddings
@@ -24,15 +22,11 @@ def get_vectorstore() -> Chroma:
 def build_index(chunks: list[Document], reset: bool = True) -> Chroma:
     """Crea (o recrea) el índice vectorial a partir de los chunks.
 
-    Pensado para ejecutarse offline (run_ingestion). Si el borrado del
-    directorio falla porque otro proceso lo tiene abierto (Windows),
-    se vacía la colección en su lugar.
+    El directorio nunca se elimina (puede ser un volumen montado en Docker
+    o estar abierto por otro proceso en Windows): se vacía la colección.
     """
-    if reset and VECTORSTORE_DIR.exists():
-        try:
-            shutil.rmtree(VECTORSTORE_DIR)
-        except PermissionError:
-            get_vectorstore().reset_collection()
+    if reset and VECTORSTORE_DIR.exists() and any(VECTORSTORE_DIR.iterdir()):
+        get_vectorstore().reset_collection()
     VECTORSTORE_DIR.mkdir(parents=True, exist_ok=True)
     return Chroma.from_documents(
         documents=chunks,
