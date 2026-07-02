@@ -1,0 +1,21 @@
+# Núcleo RAG
+langchain>=0.3
+langchain-anthropic>=0.3
+langchain-voyageai>=0.1
+langchain-chroma>=0.2
+langchain-community>=0.3
+chromadb>=0.6
+
+# Proveedores
+anthropic>=0.50
+voyageai>=0.3
+
+# Lectura de documentos
+pypdf>=5.0
+pandas>=2.2
+
+# Interfaz
+streamlit>=1.40
+
+# Utilidades
+python-dotenv>=1.0

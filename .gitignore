@@ -1,0 +1,31 @@
+# Material de contexto del curso (privado, no va al repo público)
+00_Contexto_Challenge/
+
+# Secretos y configuración local
+.env
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Base vectorial local (se regenera con el pipeline de ingesta)
+data/vectorstore/
+
+# Logs de ejecución
+logs/
+*.log
+
+# IDE / SO
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
