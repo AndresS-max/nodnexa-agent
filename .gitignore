@@ -30,3 +30,6 @@ logs/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Capturas sin procesar del usuario
+Screen/
