@@ -1,13 +1,13 @@
 # ⚡ Nodnexa — Agente de Conocimiento Corporativo con IA
 
 > **Challenge Alura Agente** · ONE (Oracle Next Education) · IA for Tech
-> 🌐 **Demo en vivo (OCI):** http://150.136.143.111:8501
+> 🌐 **Demo en vivo (OCI):** https://demo.nodnexa.com
 
 **Nodnexa** es una agencia de automatizaciones con IA para pymes de Latinoamérica. Este proyecto es su **agente de conocimiento corporativo**: un asistente conversacional que responde preguntas en lenguaje natural sobre la documentación interna de la empresa —servicios, precios, procesos, políticas, soporte— **citando siempre la fuente** (archivo, página, sección o fila) y **admitiendo explícitamente cuando la información no está en los documentos**, en lugar de inventarla.
 
 ## 🎬 El agente funcionando en Oracle Cloud
 
-Desplegado en una VM Always Free de **Oracle Cloud Infrastructure** (servicios usados: **OCI Compute** + **OCI VCN**):
+Desplegado en una VM Always Free de **Oracle Cloud Infrastructure** (servicios usados: **OCI Compute** + **OCI VCN**), con dominio propio y HTTPS (Caddy + Let's Encrypt): **https://demo.nodnexa.com**
 
 ![Pregunta al agente desplegado en OCI](docs/evidencia_deploy_oci_pregunta.png)
 
