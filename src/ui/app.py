@@ -124,6 +124,8 @@ st.markdown(
 # ------------------------------------------------------------------ Historial
 for i, msg in enumerate(st.session_state.mensajes):
     with st.chat_message(msg["rol"], avatar="⚡" if msg["rol"] == "assistant" else None):
+        if msg.get("uso_calculo"):
+            st.caption("🧮 Cotización con cálculo exacto sobre la tabla oficial de precios")
         st.markdown(msg["texto"])
         if msg["rol"] == "assistant" and msg.get("fuentes"):
             with st.expander("📄 Fuentes consultadas"):
@@ -156,6 +158,8 @@ if pregunta := st.chat_input("Pregunta sobre servicios, precios, soporte, polít
         with st.spinner("Buscando en los documentos de Nodnexa…"):
             with Cronometro() as t:
                 resultado = st.session_state.agente.preguntar(pregunta, historial)
+        if resultado.uso_calculo:
+            st.caption("🧮 Cotización con cálculo exacto sobre la tabla oficial de precios")
         st.markdown(resultado.respuesta)
 
     registrar_consulta(pregunta, resultado.respuesta, resultado.fuentes,
@@ -164,5 +168,6 @@ if pregunta := st.chat_input("Pregunta sobre servicios, precios, soporte, polít
         "rol": "assistant",
         "texto": resultado.respuesta,
         "fuentes": resultado.fuentes,
+        "uso_calculo": resultado.uso_calculo,
     })
     st.rerun()

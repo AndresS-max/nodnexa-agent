@@ -7,10 +7,11 @@ en lugar de inventar una respuesta.
 from dataclasses import dataclass, field
 
 from langchain_anthropic import ChatAnthropic
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
 from src.config import CLAUDE_MODEL
 from src.rag.retriever import ResultadoBusqueda, buscar, formatear_contexto
+from src.rag.tools import HERRAMIENTAS
 
 MENSAJE_SIN_RESPUESTA = (
     "No encontré esta información en los documentos disponibles de Nodnexa. "
@@ -34,6 +35,9 @@ luego el detalle si aporta valor, al final la(s) fuente(s).
 5. Si la pregunta involucra decisiones críticas (legales, financieras), \
 recuerda amablemente que un humano del equipo puede confirmar los detalles.
 6. Eres un asistente de IA y no debes hacerte pasar por una persona.
+7. Si el usuario pide una COTIZACIÓN, un total, o combina varios servicios \
+o meses de mantenimiento, usa SIEMPRE la herramienta `cotizar` — nunca sumes \
+precios mentalmente. Presenta el desglose y aclara si hay precios "desde".
 
 CONTEXTO:
 {contexto}"""
@@ -44,6 +48,7 @@ class RespuestaAgente:
     respuesta: str
     fuentes: list[dict] = field(default_factory=list)
     uso_rag: bool = False
+    uso_calculo: bool = False  # True si la respuesta usó la herramienta cotizar
 
 
 class NodnexaAgent:
@@ -52,7 +57,8 @@ class NodnexaAgent:
             model=CLAUDE_MODEL,
             temperature=temperature,
             max_tokens=1024,
-        )
+        ).bind_tools(HERRAMIENTAS)
+        self._tools = {t.name: t for t in HERRAMIENTAS}
 
     def preguntar(self, pregunta: str,
                   historial: list[tuple[str, str]] | None = None) -> RespuestaAgente:
@@ -74,10 +80,29 @@ class NodnexaAgent:
         mensajes.append(HumanMessage(content=pregunta))
 
         respuesta = self.llm.invoke(mensajes)
+
+        # Ciclo de herramientas: si Claude pide calcular, se ejecuta la tool
+        # y se le devuelve el resultado para que redacte la respuesta final.
+        uso_calculo = False
+        for _ in range(3):  # tope de seguridad
+            if not getattr(respuesta, "tool_calls", None):
+                break
+            mensajes.append(respuesta)
+            for llamada in respuesta.tool_calls:
+                salida = self._tools[llamada["name"]].invoke(llamada["args"])
+                mensajes.append(ToolMessage(content=str(salida),
+                                            tool_call_id=llamada["id"]))
+                uso_calculo = True
+            respuesta = self.llm.invoke(mensajes)
+
+        texto = respuesta.content if isinstance(respuesta.content, str) else \
+            " ".join(b.get("text", "") for b in respuesta.content
+                     if isinstance(b, dict))
         return RespuestaAgente(
-            respuesta=respuesta.content,
+            respuesta=texto,
             fuentes=[_fuente(r) for r in resultados],
             uso_rag=True,
+            uso_calculo=uso_calculo,
         )
 
 
