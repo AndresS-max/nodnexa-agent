@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # Solo las dependencias que los tests necesitan (sin torch ni chromadb:
+      # los tests no llaman APIs ni cargan el modelo de embeddings)
+      - name: Instalar dependencias de prueba
+        run: |
+          pip install -q langchain-core langchain-text-splitters langchain-anthropic \
+            pypdf pandas openpyxl python-docx python-pptx beautifulsoup4 \
+            python-dotenv pytest
+
+      - name: Ejecutar tests
+        run: python -m pytest tests/ -v

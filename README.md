@@ -1,5 +1,7 @@
 # ⚡ Nodnexa — Agente de Conocimiento Corporativo con IA
 
+![CI](https://github.com/AndresS-max/nodnexa-agent/actions/workflows/ci.yml/badge.svg)
+
 > **Challenge Alura Agente** · ONE (Oracle Next Education) · IA for Tech
 > 🌐 **Demo en vivo (OCI):** https://demo.nodnexa.com
 
