@@ -1,5 +1,8 @@
-"""Indexación vectorial: embeddings (locales o Voyage AI) + ChromaDB persistente."""
-from langchain_chroma import Chroma
+"""Indexación vectorial: embeddings (locales o Voyage AI) + ChromaDB persistente.
+
+Los imports pesados (Chroma, proveedores de embeddings) son perezosos: se
+cargan al usarse, no al importar el módulo.
+"""
 from langchain_core.documents import Document
 
 from src.config import (
@@ -48,8 +51,9 @@ def _get_local_embeddings():
     return _local_cache
 
 
-def get_vectorstore() -> Chroma:
+def get_vectorstore():
     """Abre la base vectorial persistida (para consultas)."""
+    from langchain_chroma import Chroma
     return Chroma(
         collection_name=COLLECTION_NAME,
         embedding_function=get_embeddings(),
@@ -57,12 +61,13 @@ def get_vectorstore() -> Chroma:
     )
 
 
-def build_index(chunks: list[Document], reset: bool = True) -> Chroma:
+def build_index(chunks: list[Document], reset: bool = True):
     """Crea (o recrea) el índice vectorial a partir de los chunks.
 
     El directorio nunca se elimina (puede ser un volumen montado en Docker
     o estar abierto por otro proceso en Windows): se vacía la colección.
     """
+    from langchain_chroma import Chroma
     if reset and VECTORSTORE_DIR.exists() and any(VECTORSTORE_DIR.iterdir()):
         get_vectorstore().reset_collection()
     VECTORSTORE_DIR.mkdir(parents=True, exist_ok=True)
