@@ -41,7 +41,9 @@ def formatear_contexto(resultados: list[ResultadoBusqueda]) -> str:
         m = r.documento.metadata
         ubicacion = (
             f"página {m['pagina']}" if "pagina" in m
-            else f"sección '{m['seccion']}'" if "seccion" in m
+            else f"diapositiva {m['diapositiva']}" if "diapositiva" in m
+            else f"sección '{m['seccion']}'" + (f", fila {m['fila']}" if "fila" in m else "")
+            if "seccion" in m
             else f"fila {m['fila']}" if "fila" in m
             else ""
         )

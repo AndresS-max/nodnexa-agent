@@ -86,7 +86,8 @@ def _fuente(r: ResultadoBusqueda) -> dict:
     return {
         "archivo": m["archivo"],
         "categoria": m["categoria"],
-        "ubicacion": m.get("pagina") or m.get("seccion") or m.get("fila") or "",
+        "ubicacion": (m.get("pagina") or m.get("diapositiva")
+                      or m.get("seccion") or m.get("fila") or ""),
         "score": round(r.score, 3),
         "extracto": r.documento.page_content[:180],
     }

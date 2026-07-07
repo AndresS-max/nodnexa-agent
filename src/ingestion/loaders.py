@@ -88,11 +88,121 @@ def load_json(path: Path) -> list[Document]:
     return docs
 
 
+def load_docx(path: Path) -> list[Document]:
+    """Word: párrafos agrupados bajo su encabezado más cercano, y las tablas
+    convertidas fila→frase (misma lógica que el CSV)."""
+    from docx import Document as DocxDocument
+
+    docx = DocxDocument(str(path))
+    docs, seccion, buffer = [], "Inicio", []
+
+    def cerrar_seccion():
+        texto = _limpiar("\n".join(buffer))
+        if texto:
+            docs.append(Document(page_content=f"{seccion}\n{texto}",
+                                 metadata=_meta(path, "docx", seccion=seccion)))
+
+    for p in docx.paragraphs:
+        if p.style.name.startswith("Heading") and p.text.strip():
+            cerrar_seccion()
+            seccion, buffer = p.text.strip(), []
+        elif p.text.strip():
+            buffer.append(p.text.strip())
+    cerrar_seccion()
+
+    for num, tabla in enumerate(docx.tables, start=1):
+        filas = [[c.text.strip() for c in fila.cells] for fila in tabla.rows]
+        if len(filas) < 2:
+            continue
+        encabezados = filas[0]
+        for fila in filas[1:]:
+            texto = ". ".join(f"{h}: {v}" for h, v in zip(encabezados, fila) if v)
+            if texto:
+                docs.append(Document(page_content=texto,
+                                     metadata=_meta(path, "docx",
+                                                    seccion=f"tabla {num}")))
+    return docs
+
+
+def load_xlsx(path: Path) -> list[Document]:
+    """Excel: cada fila de cada hoja se convierte en frase con encabezados
+    (las planillas tienen lógica tabular, no de texto corrido)."""
+    hojas = pd.read_excel(path, sheet_name=None)
+    docs = []
+    for nombre_hoja, df in hojas.items():
+        for idx, row in df.iterrows():
+            partes = [f"{col}: {val}" for col, val in row.items() if pd.notna(val)]
+            if partes:
+                docs.append(Document(
+                    page_content=". ".join(str(p) for p in partes),
+                    metadata=_meta(path, "xlsx", seccion=nombre_hoja,
+                                   fila=int(idx) + 2),
+                ))
+    return docs
+
+
+def load_html(path: Path) -> list[Document]:
+    """HTML: texto sin etiquetas ni scripts, dividido por encabezados h1-h3."""
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(path.read_text(encoding="utf-8", errors="ignore"),
+                         "html.parser")
+    for basura in soup(["script", "style", "nav", "footer"]):
+        basura.decompose()
+
+    docs, seccion, buffer = [], soup.title.string.strip() if soup.title and soup.title.string else "Inicio", []
+
+    def cerrar_seccion():
+        texto = _limpiar(" ".join(buffer))
+        if texto:
+            docs.append(Document(page_content=f"{seccion}\n{texto}",
+                                 metadata=_meta(path, "html", seccion=seccion)))
+
+    cuerpo = soup.body or soup
+    for elem in cuerpo.find_all(["h1", "h2", "h3", "p", "li", "td", "th"]):
+        texto = elem.get_text(" ", strip=True)
+        if not texto:
+            continue
+        if elem.name in ("h1", "h2", "h3"):
+            cerrar_seccion()
+            seccion, buffer = texto, []
+        else:
+            buffer.append(texto)
+    cerrar_seccion()
+    return docs
+
+
+def load_pptx(path: Path) -> list[Document]:
+    """PowerPoint: un Document por diapositiva, incluyendo las notas del
+    orador (suelen contener contexto importante)."""
+    from pptx import Presentation
+
+    pres = Presentation(str(path))
+    docs = []
+    for num, slide in enumerate(pres.slides, start=1):
+        textos = [shape.text.strip() for shape in slide.shapes
+                  if getattr(shape, "has_text_frame", False) and shape.text.strip()]
+        if slide.has_notes_slide:
+            notas = slide.notes_slide.notes_text_frame.text.strip()
+            if notas:
+                textos.append(f"Notas del orador: {notas}")
+        texto = _limpiar("\n".join(textos))
+        if texto:
+            docs.append(Document(page_content=texto,
+                                 metadata=_meta(path, "pptx", diapositiva=num)))
+    return docs
+
+
 LOADERS = {
     ".pdf": load_pdf,
     ".csv": load_csv,
     ".md": load_markdown,
     ".json": load_json,
+    ".docx": load_docx,
+    ".xlsx": load_xlsx,
+    ".html": load_html,
+    ".htm": load_html,
+    ".pptx": load_pptx,
 }
 
 
