@@ -8,12 +8,8 @@ from dataclasses import dataclass
 
 from langchain_core.documents import Document
 
-from src.config import TOP_K
+from src.config import TOP_K, UMBRAL_RELEVANCIA
 from src.ingestion.indexer import get_vectorstore
-
-# Umbral de relevancia (similitud coseno normalizada 0-1). Por debajo de esto,
-# el fragmento no se considera respaldo suficiente para responder.
-UMBRAL_RELEVANCIA = 0.35
 
 
 @dataclass

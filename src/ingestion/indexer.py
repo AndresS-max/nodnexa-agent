@@ -1,13 +1,51 @@
-"""Indexación vectorial: embeddings (Voyage AI) + ChromaDB persistente."""
+"""Indexación vectorial: embeddings (locales o Voyage AI) + ChromaDB persistente."""
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain_voyageai import VoyageAIEmbeddings
 
-from src.config import COLLECTION_NAME, VECTORSTORE_DIR, VOYAGE_MODEL
+from src.config import (
+    COLLECTION_NAME, EMBEDDINGS_PROVIDER, LOCAL_EMBEDDINGS_MODEL,
+    VECTORSTORE_DIR, VOYAGE_MODEL,
+)
 
 
-def get_embeddings() -> VoyageAIEmbeddings:
-    return VoyageAIEmbeddings(model=VOYAGE_MODEL)
+def get_embeddings():
+    """Proveedor de embeddings según configuración.
+
+    - "local" (default): modelo multilingüe de HuggingFace ejecutado en la
+      propia máquina — sin límites de peticiones, sin costo por consulta.
+    - "voyage": API de Voyage AI (requiere VOYAGE_API_KEY).
+    """
+    if EMBEDDINGS_PROVIDER == "voyage":
+        from langchain_voyageai import VoyageAIEmbeddings
+        return VoyageAIEmbeddings(model=VOYAGE_MODEL)
+    return _get_local_embeddings()
+
+
+_local_cache = None
+
+
+def _get_local_embeddings():
+    """Modelo local cacheado (cargarlo toma segundos; se hace una sola vez).
+
+    Los modelos e5 requieren prefijos distintos para documentos ("passage: ")
+    y consultas ("query: ") — sin ellos la calidad de recuperación baja.
+    """
+    global _local_cache
+    if _local_cache is None:
+        from langchain_huggingface import HuggingFaceEmbeddings
+
+        class E5Embeddings(HuggingFaceEmbeddings):
+            def embed_documents(self, texts):
+                return super().embed_documents([f"passage: {t}" for t in texts])
+
+            def embed_query(self, text):
+                return super().embed_query(f"query: {text}")
+
+        _local_cache = E5Embeddings(
+            model_name=LOCAL_EMBEDDINGS_MODEL,
+            encode_kwargs={"normalize_embeddings": True},
+        )
+    return _local_cache
 
 
 def get_vectorstore() -> Chroma:

@@ -33,3 +33,7 @@ desktop.ini
 
 # Capturas sin procesar del usuario
 Screen/
+
+# Material del curso Alura y clones de revision (nunca al repo publico)
+AluraDoc/
+revision/

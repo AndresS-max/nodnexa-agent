@@ -10,6 +10,10 @@ chromadb>=0.6
 anthropic>=0.50
 voyageai>=0.3
 
+# Embeddings locales (proveedor por defecto)
+langchain-huggingface>=0.1
+sentence-transformers>=3.0
+
 # Lectura de documentos
 pypdf>=5.0
 pandas>=2.2

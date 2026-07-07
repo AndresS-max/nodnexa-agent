@@ -7,6 +7,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pre-descarga del modelo de embeddings local (evita bajarlo en cada arranque)
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
+
 # Código y base de conocimiento
 COPY src/ src/
 COPY data/documents/ data/documents/
