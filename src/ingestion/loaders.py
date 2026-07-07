@@ -22,10 +22,28 @@ def _limpiar(texto: str) -> str:
     return texto.strip()
 
 
+_categorias_dir_cache: dict = {}
+
+
+def _categoria_de(path: Path) -> str:
+    """Categoría del documento: primero busca un `_categorias.json` en la
+    carpeta del documento (mapa nombre→categoría, útil para corpus de
+    clientes), luego el mapa de config, y 'General' como fallback."""
+    carpeta = str(path.parent)
+    if carpeta not in _categorias_dir_cache:
+        mapa_json = path.parent / "_categorias.json"
+        _categorias_dir_cache[carpeta] = (
+            json.loads(mapa_json.read_text(encoding="utf-8-sig"))
+            if mapa_json.exists() else {}
+        )
+    return (_categorias_dir_cache[carpeta].get(path.name)
+            or CATEGORIA_POR_ARCHIVO.get(path.name, "General"))
+
+
 def _meta(path: Path, formato: str, **extra) -> dict:
     return {
         "archivo": path.name,
-        "categoria": CATEGORIA_POR_ARCHIVO.get(path.name, "General"),
+        "categoria": _categoria_de(path),
         "formato": formato,
         **extra,
     }
@@ -210,6 +228,8 @@ def load_documents(docs_dir: Path) -> list[Document]:
     """Carga todos los documentos soportados de la carpeta."""
     documentos = []
     for path in sorted(docs_dir.iterdir()):
+        if path.name.startswith("_"):  # archivos de configuración del corpus
+            continue
         loader = LOADERS.get(path.suffix.lower())
         if loader:
             documentos.extend(loader(path))

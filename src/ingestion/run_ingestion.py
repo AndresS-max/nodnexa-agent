@@ -21,9 +21,10 @@ def main() -> None:
     chunks = chunk_documents(documentos)
     print(f"✂️  {len(documentos)} documentos -> {len(chunks)} chunks")
 
-    print("🧮 Generando embeddings (Voyage AI) e indexando en ChromaDB...")
+    from src.config import EMBEDDINGS_PROVIDER, VECTORSTORE_DIR
+    print(f"🧮 Generando embeddings ({EMBEDDINGS_PROVIDER}) e indexando en ChromaDB...")
     build_index(chunks)
-    print("✅ Índice vectorial creado en data/vectorstore/")
+    print(f"✅ Índice vectorial creado en {VECTORSTORE_DIR}")
 
 
 if __name__ == "__main__":

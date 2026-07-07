@@ -6,10 +6,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Rutas
+# Rutas (con override por env var: permite corpus e índices alternativos,
+# p. ej. uno por cliente o para pruebas de estrés)
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DOCS_DIR = ROOT_DIR / "data" / "documents"
-VECTORSTORE_DIR = ROOT_DIR / "data" / "vectorstore"
+DOCS_DIR = Path(os.getenv("NODNEXA_DOCS_DIR", ROOT_DIR / "data" / "documents"))
+VECTORSTORE_DIR = Path(os.getenv("NODNEXA_VECTORSTORE_DIR",
+                                 ROOT_DIR / "data" / "vectorstore"))
 
 # Modelos (ajustables por variable de entorno sin tocar código)
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5")

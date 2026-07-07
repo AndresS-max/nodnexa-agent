@@ -67,6 +67,15 @@ st.markdown(f"""
         background: {ACCENT} !important; color: white !important;
         border: none !important; border-radius: 8px !important;
     }}
+    /* Selector de categoría legible sobre la barra lateral oscura */
+    [data-testid="stSidebar"] [data-baseweb="select"] > div {{
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(94, 234, 212, 0.45) !important;
+        border-radius: 8px !important;
+    }}
+    [data-testid="stSidebar"] [data-baseweb="select"] * {{
+        color: #E2E8F0 !important;
+    }}
     .stButton > button {{ border-radius: 10px; }}
 </style>
 """, unsafe_allow_html=True)
@@ -86,9 +95,22 @@ with st.sidebar:
     st.markdown("### 📚 Base de conocimiento")
     formatos = tuple(ext.lstrip(".") for ext in LOADERS)
     archivos = sorted(p.name for p in DOCS_DIR.iterdir()
-                      if p.suffix.lower() in LOADERS)
+                      if p.suffix.lower() in LOADERS and not p.name.startswith("_"))
     for a in archivos:
         st.markdown(f"- `{a}`")
+
+    st.divider()
+    st.markdown("### 🔎 Filtrar búsqueda")
+    from src.ingestion.indexer import get_vectorstore
+    try:
+        _metas = get_vectorstore().get(include=["metadatas"])["metadatas"]
+        categorias = sorted({m["categoria"] for m in _metas if m.get("categoria")})
+    except Exception:
+        categorias = []
+    filtro_categoria = st.selectbox(
+        "Categoría", ["Todas"] + categorias,
+        help="Restringe las respuestas a los documentos de una categoría.",
+    )
 
     st.divider()
     st.markdown("### ⬆️ Actualizar documentos")
@@ -157,7 +179,10 @@ if pregunta := st.chat_input("Pregunta sobre servicios, precios, soporte, polít
     with st.chat_message("assistant", avatar="⚡"):
         with st.spinner("Buscando en los documentos de Nodnexa…"):
             with Cronometro() as t:
-                resultado = st.session_state.agente.preguntar(pregunta, historial)
+                resultado = st.session_state.agente.preguntar(
+                    pregunta, historial,
+                    categoria=None if filtro_categoria == "Todas" else filtro_categoria,
+                )
         if resultado.uso_calculo:
             st.caption("🧮 Cotización con cálculo exacto sobre la tabla oficial de precios")
         st.markdown(resultado.respuesta)

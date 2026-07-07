@@ -61,13 +61,15 @@ class NodnexaAgent:
         self._tools = {t.name: t for t in HERRAMIENTAS}
 
     def preguntar(self, pregunta: str,
-                  historial: list[tuple[str, str]] | None = None) -> RespuestaAgente:
+                  historial: list[tuple[str, str]] | None = None,
+                  categoria: str | None = None) -> RespuestaAgente:
         """Responde una pregunta usando RAG.
 
         historial: lista de pares (rol, texto) con rol "user" o "assistant",
         para mantener el hilo de la conversación dentro de la sesión.
+        categoria: si se indica, la búsqueda se restringe a esa categoría.
         """
-        resultados = buscar(pregunta)
+        resultados = buscar(pregunta, categoria=categoria)
         if not resultados:
             return RespuestaAgente(respuesta=MENSAJE_SIN_RESPUESTA, uso_rag=False)
 
