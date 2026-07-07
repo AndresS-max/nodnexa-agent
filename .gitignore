@@ -37,3 +37,5 @@ Screen/
 # Material del curso Alura y clones de revision (nunca al repo publico)
 AluraDoc/
 revision/
+data/documents_stress/
+data/vectorstore_stress/
