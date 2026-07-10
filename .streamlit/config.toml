@@ -8,6 +8,10 @@ font = "sans serif"
 
 [server]
 headless = true
+# Sin recarga automática en producción: el watcher de Streamlit escanea todos
+# los módulos cargados y con torch/transformers en la imagen eso cuelga el
+# arranque minutos en máquinas de 1 CPU (además de llenar los logs de errores).
+fileWatcherType = "none"
 
 [browser]
 gatherUsageStats = false
