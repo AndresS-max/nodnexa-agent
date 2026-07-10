@@ -73,8 +73,14 @@ st.markdown(f"""
         border: 1px solid rgba(94, 234, 212, 0.45) !important;
         border-radius: 8px !important;
     }}
-    [data-testid="stSidebar"] [data-baseweb="select"] * {{
-        color: #E2E8F0 !important;
+    [data-testid="stSidebar"] [data-baseweb="select"] *,
+    [data-testid="stSidebar"] [data-baseweb="select"] div[value] {{
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }}
+    [data-testid="stSidebar"] [data-baseweb="select"] svg {{
+        fill: #5EEAD4 !important;
     }}
     .stButton > button {{ border-radius: 10px; }}
 </style>
@@ -101,14 +107,20 @@ with st.sidebar:
 
     st.divider()
     st.markdown("### 🔎 Filtrar búsqueda")
-    from src.ingestion.indexer import get_vectorstore
-    try:
-        _metas = get_vectorstore().get(include=["metadatas"])["metadatas"]
-        categorias = sorted({m["categoria"] for m in _metas if m.get("categoria")})
-    except Exception:
-        categorias = []
+
+    @st.cache_data(ttl=600, show_spinner=False)
+    def _categorias_indexadas() -> list[str]:
+        """Categorías presentes en el índice (cacheado: leerlas en cada
+        interacción hacía lenta la app en servidores pequeños)."""
+        from src.ingestion.indexer import get_vectorstore
+        try:
+            metas = get_vectorstore().get(include=["metadatas"])["metadatas"]
+            return sorted({m["categoria"] for m in metas if m.get("categoria")})
+        except Exception:
+            return []
+
     filtro_categoria = st.selectbox(
-        "Categoría", ["Todas"] + categorias,
+        "Categoría", ["Todas"] + _categorias_indexadas(),
         help="Restringe las respuestas a los documentos de una categoría.",
     )
 
