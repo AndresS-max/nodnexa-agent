@@ -23,7 +23,9 @@ openpyxl>=3.1
 beautifulsoup4>=4.12
 
 # Interfaz
-streamlit>=1.40
+# Fijado: la 1.59 cambió el DOM del selectbox (baseweb -> react-aria) y una
+# deriva local/prod de versiones nos costó un bug de CSS invisible en local
+streamlit==1.59.1
 
 # Utilidades
 python-dotenv>=1.0

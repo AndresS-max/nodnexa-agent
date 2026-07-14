@@ -68,22 +68,26 @@ st.markdown(f"""
         border: none !important; border-radius: 8px !important;
     }}
     /* Selector de categoría legible sobre la barra lateral oscura.
-       El tema claro pinta de blanco un div INTERNO del select: se fuerza
-       fondo oscuro sólido afuera y transparencia en todos los interiores. */
+       Streamlit >=1.59 usa react-aria ComboBox (un input dentro de un
+       role=group); versiones previas usan baseweb select. Se cubren ambos. */
+    [data-testid="stSidebar"] [data-testid="stSelectbox"] [role="group"],
     [data-testid="stSidebar"] [data-baseweb="select"] > div {{
         background-color: #1E293B !important;
         border: 1px solid rgba(94, 234, 212, 0.45) !important;
         border-radius: 8px !important;
     }}
+    [data-testid="stSidebar"] [data-testid="stSelectbox"] input,
+    [data-testid="stSidebar"] [data-testid="stSelectbox"] button,
     [data-testid="stSidebar"] [data-baseweb="select"] > div div {{
         background-color: transparent !important;
     }}
-    [data-testid="stSidebar"] [data-baseweb="select"] *,
-    [data-testid="stSidebar"] [data-baseweb="select"] div[value] {{
+    [data-testid="stSidebar"] [data-testid="stSelectbox"] input,
+    [data-testid="stSidebar"] [data-baseweb="select"] * {{
         color: #FFFFFF !important;
         font-weight: 600 !important;
         -webkit-text-fill-color: #FFFFFF !important;
     }}
+    [data-testid="stSidebar"] [data-testid="stSelectbox"] svg,
     [data-testid="stSidebar"] [data-baseweb="select"] svg {{
         fill: #5EEAD4 !important;
     }}
