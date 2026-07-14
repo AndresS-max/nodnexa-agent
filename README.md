@@ -11,11 +11,11 @@
 
 Desplegado en una VM Always Free de **Oracle Cloud Infrastructure** (servicios usados: **OCI Compute** + **OCI VCN**), con dominio propio y HTTPS (Caddy + Let's Encrypt): **https://demo.nodnexa.com**
 
-![Pregunta al agente desplegado en OCI](docs/evidencia_deploy_oci_pregunta.png)
+![Interfaz del agente desplegado](docs/demo_interfaz.png)
 
-![Respuesta con fuentes citadas](docs/evidencia_deploy_oci_respuesta.png)
+![Respuesta con fuentes citadas](docs/demo_respuesta_fuentes.png)
 
-*Obsérvese la barra de direcciones: la aplicación corre en la IP pública de OCI, responde con datos exactos de los documentos y cita sus fuentes (CSV fila 6 + catálogo página 1).*
+*El agente en producción (https://demo.nodnexa.com): base de conocimiento multiformato, filtro por categoría, y respuestas que citan documento y página exactos.*
 
 ## 🏗️ Arquitectura
 
